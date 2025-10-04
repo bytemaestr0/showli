@@ -4,13 +4,12 @@ import MediaCard from '../components/MediaCard'
 import SearchBar from '../components/SearchBar'
 import '../styles/home.css'
 
-export default function Home({ onMediaSelect }) {
+function Home({ onMediaSelect, user, continueWatching = [] }) {
   const [trending, setTrending] = useState([])
   const [movies, setMovies] = useState([])
   const [tvShows, setTVShows] = useState([])
   const [searchResults, setSearchResults] = useState([])
   const [loading, setLoading] = useState(true)
-  const [searching, setSearching] = useState(false)
 
   useEffect(() => {
     loadContent()
@@ -21,7 +20,7 @@ export default function Home({ onMediaSelect }) {
       const [trendingData, moviesData, tvData] = await Promise.all([
         tmdbApi.getTrending(),
         tmdbApi.getPopularMovies(),
-        tmdbApi.getPopularTVShows()
+        tmdbApi.getTopRatedTVShows()
       ])
 
       setTrending(trendingData.results || [])
@@ -35,7 +34,6 @@ export default function Home({ onMediaSelect }) {
   }
 
   const handleSearch = async (query) => {
-    setSearching(true)
     try {
       const data = await tmdbApi.searchMulti(query)
       setSearchResults(data.results?.filter(item => 
@@ -43,8 +41,6 @@ export default function Home({ onMediaSelect }) {
       ) || [])
     } catch (error) {
       console.error('Error searching:', error)
-    } finally {
-      setSearching(false)
     }
   }
 
@@ -101,6 +97,29 @@ export default function Home({ onMediaSelect }) {
           </div>
         ) : (
           <>
+            {/* Continue Watching Section */}
+            {user && continueWatching.length > 0 && (
+              <div className="home-section">
+                <h2 className="home-section-title">Continue Watching</h2>
+                <div className="home-grid">
+                  {continueWatching.slice(0, 6).map((item) => (
+                    <MediaCard
+                      key={item.id}
+                      media={{
+                        id: parseInt(item.media_id),
+                        title: item.title,
+                        name: item.title,
+                        poster_path: item.poster_path,
+                        media_type: item.media_type
+                      }}
+                      onClick={onMediaSelect}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Trending Now Section */}
             <div className="home-section">
               <h2 className="home-section-title">Trending Now</h2>
               <div className="home-grid">
@@ -114,6 +133,7 @@ export default function Home({ onMediaSelect }) {
               </div>
             </div>
 
+            {/* Popular Movies Section */}
             <div className="home-section">
               <h2 className="home-section-title">Popular Movies</h2>
               <div className="home-grid">
@@ -127,8 +147,9 @@ export default function Home({ onMediaSelect }) {
               </div>
             </div>
 
+            {/* Top Rated TV Shows Section */}
             <div className="home-section">
-              <h2 className="home-section-title">Popular TV Shows</h2>
+              <h2 className="home-section-title">Top Rated TV Shows</h2>
               <div className="home-grid">
                 {tvShows.slice(0, 12).map((item) => (
                   <MediaCard
@@ -145,3 +166,5 @@ export default function Home({ onMediaSelect }) {
     </div>
   )
 }
+
+export default Home

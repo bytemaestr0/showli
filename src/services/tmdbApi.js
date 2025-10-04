@@ -23,6 +23,13 @@ export const tmdbApi = {
     return response.json()
   },
 
+  getTopRatedTVShows: async () => {
+    const response = await fetch(
+      `${BASE_URL}/tv/top_rated?api_key=${API_KEY}`
+    )
+    return response.json()
+  },
+
   searchMulti: async (query) => {
     const response = await fetch(
       `${BASE_URL}/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}`
@@ -33,6 +40,13 @@ export const tmdbApi = {
   getDetails: async (mediaType, id) => {
     const response = await fetch(
       `${BASE_URL}/${mediaType}/${id}?api_key=${API_KEY}`
+    )
+    return response.json()
+  },
+
+  getTVSeasons: async (tvId) => {
+    const response = await fetch(
+      `${BASE_URL}/tv/${tvId}?api_key=${API_KEY}`
     )
     return response.json()
   },

@@ -75,7 +75,11 @@ function App() {
       />
 
       {currentPage === 'home' && (
-        <Home onMediaSelect={handleMediaSelect} />
+        <Home 
+          onMediaSelect={handleMediaSelect}
+          user={user}
+          continueWatching={history}
+        />
       )}
 
       {currentPage === 'player' && selectedMedia && (

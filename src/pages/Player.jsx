@@ -4,7 +4,7 @@ import { tmdbApi } from '../services/tmdbApi'
 import VideoPlayer from '../components/VideoPlayer'
 import '../styles/player.css'
 
-export default function Player({ 
+function Player({ 
   media, 
   user, 
   isBookmarked, 
@@ -44,6 +44,7 @@ export default function Player({
   const year = (details.release_date || details.first_air_date)?.split('-')[0]
   const rating = details.vote_average?.toFixed(1)
   const runtime = details.runtime || details.episode_run_time?.[0]
+  const totalSeasons = details.number_of_seasons || 1
 
   return (
     <div className="player-container">
@@ -51,6 +52,7 @@ export default function Player({
         <VideoPlayer 
           mediaType={media.media_type}
           tmdbId={media.id}
+          totalSeasons={totalSeasons}
         />
 
         <div className="player-info">
@@ -60,6 +62,9 @@ export default function Player({
             {year && <span>{year}</span>}
             {rating && <span>⭐ {rating}</span>}
             {runtime && <span>{runtime} min</span>}
+            {media.media_type === 'tv' && totalSeasons && (
+              <span>{totalSeasons} Season{totalSeasons > 1 ? 's' : ''}</span>
+            )}
             {details.genres && (
               <span>{details.genres.map(g => g.name).join(', ')}</span>
             )}
@@ -96,3 +101,5 @@ export default function Player({
     </div>
   )
 }
+
+export default Player
