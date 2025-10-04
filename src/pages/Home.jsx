@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react'
 import { tmdbApi } from '../services/tmdbApi'
 import MediaCard from '../components/MediaCard'
-import SearchBar from '../components/SearchBar'
 import Carousel from '../components/Carousel'
+import { Play, Info } from 'lucide-react'
 import '../styles/home.css'
 
-function Home({ onMediaSelect, user, continueWatching = [] }) {
+function Home({ onMediaSelect, user, continueWatching = [], searchResults, onClearSearch }) {
   const [trending, setTrending] = useState([])
   const [movies, setMovies] = useState([])
   const [tvShows, setTVShows] = useState([])
-  const [searchResults, setSearchResults] = useState([])
+  const [featured, setFeatured] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -24,29 +24,19 @@ function Home({ onMediaSelect, user, continueWatching = [] }) {
         tmdbApi.getTopRatedTVShows()
       ])
 
-      setTrending(trendingData.results || [])
+      const trendingResults = trendingData.results || []
+      setTrending(trendingResults)
       setMovies(moviesData.results || [])
       setTVShows(tvData.results || [])
+      
+      if (trendingResults.length > 0) {
+        setFeatured(trendingResults[0])
+      }
     } catch (error) {
       console.error('Error loading content:', error)
     } finally {
       setLoading(false)
     }
-  }
-
-  const handleSearch = async (query) => {
-    try {
-      const data = await tmdbApi.searchMulti(query)
-      setSearchResults(data.results?.filter(item => 
-        item.media_type === 'movie' || item.media_type === 'tv'
-      ) || [])
-    } catch (error) {
-      console.error('Error searching:', error)
-    }
-  }
-
-  const clearSearch = () => {
-    setSearchResults([])
   }
 
   if (loading) {
@@ -57,22 +47,51 @@ function Home({ onMediaSelect, user, continueWatching = [] }) {
     )
   }
 
+  const featuredTitle = featured?.title || featured?.name
+  const featuredOverview = featured?.overview
+
   return (
     <div className="home-container">
-      <div className="home-hero">
-        <div className="home-hero-content">
-          <h1>Unlimited movies, TV shows, and more</h1>
-          <p>Watch anywhere. Stream anytime.</p>
-          <SearchBar onSearch={handleSearch} />
+      {featured && (
+        <div 
+          className="home-hero"
+          style={{
+            backgroundImage: `url(${tmdbApi.getImageUrl(featured.backdrop_path, 'original')})`
+          }}
+        >
+          <div className="home-hero-content">
+            <h1 className="home-hero-title">{featuredTitle}</h1>
+            <p className="home-hero-overview">
+              {featuredOverview && featuredOverview.length > 150 
+                ? featuredOverview.substring(0, 150) + '...' 
+                : featuredOverview}
+            </p>
+            <div className="home-hero-buttons">
+              <button 
+                className="home-hero-btn home-hero-btn-play"
+                onClick={() => onMediaSelect(featured)}
+              >
+                <Play size={24} fill="currentColor" />
+                <span>Play</span>
+              </button>
+              <button 
+                className="home-hero-btn home-hero-btn-info"
+                onClick={() => onMediaSelect(featured)}
+              >
+                <Info size={24} />
+                <span>More Info</span>
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="home-content">
         {searchResults.length > 0 ? (
           <div className="home-section">
             <div className="home-search-header">
               <h2 className="home-section-title" style={{ padding: 0 }}>Search Results</h2>
-              <button onClick={clearSearch} className="home-clear-search">
+              <button onClick={onClearSearch} className="home-clear-search">
                 Clear Search
               </button>
             </div>
@@ -88,24 +107,6 @@ function Home({ onMediaSelect, user, continueWatching = [] }) {
           </div>
         ) : (
           <>
-            {/* Continue Watching Section */}
-            {user && continueWatching.length > 0 && (
-              <div className="home-section">
-                <h2 className="home-section-title">Continue Watching</h2>
-                <Carousel
-                  items={continueWatching.slice(0, 12).map(item => ({
-                    id: parseInt(item.media_id),
-                    title: item.title,
-                    name: item.title,
-                    poster_path: item.poster_path,
-                    media_type: item.media_type
-                  }))}
-                  onMediaSelect={onMediaSelect}
-                />
-              </div>
-            )}
-
-            {/* Trending Now Section */}
             <div className="home-section">
               <h2 className="home-section-title">Trending Now</h2>
               <Carousel
@@ -114,7 +115,6 @@ function Home({ onMediaSelect, user, continueWatching = [] }) {
               />
             </div>
 
-            {/* Popular Movies Section */}
             <div className="home-section">
               <h2 className="home-section-title">Popular Movies</h2>
               <Carousel
@@ -126,7 +126,6 @@ function Home({ onMediaSelect, user, continueWatching = [] }) {
               />
             </div>
 
-            {/* Top Rated TV Shows Section */}
             <div className="home-section">
               <h2 className="home-section-title">Top Rated TV Shows</h2>
               <Carousel
@@ -137,6 +136,22 @@ function Home({ onMediaSelect, user, continueWatching = [] }) {
                 onMediaSelect={onMediaSelect}
               />
             </div>
+
+            {user && continueWatching.length > 0 && (
+              <div className="home-section">
+                <h2 className="home-section-title">Continue Watching</h2>
+                <Carousel
+                  items={continueWatching.slice(0, 20).map(item => ({
+                    id: parseInt(item.media_id),
+                    title: item.title,
+                    name: item.title,
+                    poster_path: item.poster_path,
+                    media_type: item.media_type
+                  }))}
+                  onMediaSelect={onMediaSelect}
+                />
+              </div>
+            )}
           </>
         )}
       </div>

@@ -8,18 +8,36 @@ import History from './pages/History'
 import { useAuth } from './hooks/useAuth'
 import { useBookmarks } from './hooks/useBookmarks'
 import { useWatchHistory } from './hooks/useWatchHistory'
+import { tmdbApi } from './services/tmdbApi'
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home')
   const [selectedMedia, setSelectedMedia] = useState(null)
+  const [searchResults, setSearchResults] = useState([])
   
   const { user, loading: authLoading, signIn, signUp, signOut } = useAuth()
   const { bookmarks, loading: bookmarksLoading, addBookmark, removeBookmark, isBookmarked } = useBookmarks(user)
   const { history, loading: historyLoading, addToHistory } = useWatchHistory(user)
 
+  const handleSearch = async (query) => {
+    try {
+      const data = await tmdbApi.searchMulti(query)
+      setSearchResults(data.results?.filter(item => 
+        item.media_type === 'movie' || item.media_type === 'tv'
+      ) || [])
+    } catch (error) {
+      console.error('Error searching:', error)
+    }
+  }
+
+  const clearSearch = () => {
+    setSearchResults([])
+  }
+
   const handleMediaSelect = (media) => {
     setSelectedMedia(media)
     setCurrentPage('player')
+    clearSearch()
     window.scrollTo(0, 0)
   }
 
@@ -42,11 +60,16 @@ function App() {
       return
     }
     setCurrentPage(page)
+    clearSearch()
     window.scrollTo(0, 0)
   }
 
   const handleSignOut = async () => {
     await signOut()
+    setCurrentPage('home')
+  }
+
+  const handleAuthSuccess = () => {
     setCurrentPage('home')
   }
 
@@ -72,6 +95,7 @@ function App() {
         onSignOut={handleSignOut}
         currentPage={currentPage}
         onNavigate={handleNavigate}
+        onSearch={handleSearch}
       />
 
       {currentPage === 'home' && (
@@ -79,6 +103,8 @@ function App() {
           onMediaSelect={handleMediaSelect}
           user={user}
           continueWatching={history}
+          searchResults={searchResults}
+          onClearSearch={clearSearch}
         />
       )}
 
@@ -96,6 +122,7 @@ function App() {
         <SignIn 
           onSignIn={signIn}
           onSignUp={signUp}
+          onSuccess={handleAuthSuccess}
         />
       )}
 

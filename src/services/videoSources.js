@@ -11,9 +11,13 @@ export const videoSources = {
         ? `https://vidsrc.pro/embed/movie/${tmdbId}`
         : `https://vidsrc.pro/embed/tv/${tmdbId}/${season}/${episode}`,
       
-      embed: type === 'movie'
-        ? `https://www.2embed.cc/embed/${tmdbId}`
-        : `https://www.2embed.cc/embedtv/${tmdbId}&s=${season}&e=${episode}`
+      embedsu: type === 'movie'
+        ? `https://embed.su/embed/movie/${tmdbId}`
+        : `https://embed.su/embed/tv/${tmdbId}/${season}/${episode}`,
+
+      autoembed: type === 'movie'
+        ? `https://player.autoembed.cc/embed/movie/${tmdbId}`
+        : `https://player.autoembed.cc/embed/tv/${tmdbId}/${season}/${episode}`
     }
   }
 }

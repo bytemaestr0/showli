@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
-import { Home, Bookmark, Clock, LogOut } from 'lucide-react'
+import { Home, Bookmark, Clock, LogOut, Search, LogIn } from 'lucide-react'
 import '../styles/navbar.css'
 
-export default function Navbar({ user, onSignOut, currentPage, onNavigate }) {
+function Navbar({ user, onSignOut, currentPage, onNavigate, onSearch }) {
   const [scrolled, setScrolled] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
     const handleScroll = () => {
@@ -13,51 +14,79 @@ export default function Navbar({ user, onSignOut, currentPage, onNavigate }) {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  const handleSearchSubmit = (e) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      onSearch(searchQuery)
+      onNavigate('home')
+    }
+  }
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value)
+  }
+
   return (
     <nav className={`navbar-container ${scrolled ? 'navbar-scrolled' : ''}`}>
       <div className="navbar-content">
-        <div 
-          onClick={() => onNavigate('home')} 
-          className="navbar-logo"
-        >
-          Showli
+        <div className="navbar-left">
+          <div 
+            onClick={() => onNavigate('home')} 
+            className="navbar-logo"
+          >
+            Show<span className="navbar-logo-highlight">LI</span>
+          </div>
+
+          <div className="navbar-links">
+            {user && (
+              <>
+                <div 
+                  onClick={() => onNavigate('bookmarks')}
+                  className={`navbar-link ${currentPage === 'bookmarks' ? 'navbar-link-active' : ''}`}
+                >
+                  <Bookmark size={18} />
+                  <span className="navbar-link-text">Bookmarks</span>
+                </div>
+                
+                <div 
+                  onClick={() => onNavigate('history')}
+                  className={`navbar-link ${currentPage === 'history' ? 'navbar-link-active' : ''}`}
+                >
+                  <Clock size={18} />
+                  <span className="navbar-link-text">History</span>
+                </div>
+              </>
+            )}
+          </div>
         </div>
 
-        <div className="navbar-links">
+        {/* Search Bar - Centered */}
+        <form onSubmit={handleSearchSubmit} className="navbar-search">
+          <div className="navbar-search-wrapper">
+            <Search className="navbar-search-icon" size={20} />
+            <input
+              type="text"
+              placeholder="Search movies and TV shows..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+              className="navbar-search-input"
+            />
+          </div>
+        </form>
+
+        <div className="navbar-user">
           <div 
             onClick={() => onNavigate('home')}
-            className={`navbar-link ${currentPage === 'home' ? 'navbar-link-active' : ''}`}
+            className={`navbar-home-btn ${currentPage === 'home' ? 'navbar-home-active' : ''}`}
           >
             <Home size={18} />
             <span>Home</span>
           </div>
-          
-          {user && (
-            <>
-              <div 
-                onClick={() => onNavigate('bookmarks')}
-                className={`navbar-link ${currentPage === 'bookmarks' ? 'navbar-link-active' : ''}`}
-              >
-                <Bookmark size={18} />
-                <span>Bookmarks</span>
-              </div>
-              
-              <div 
-                onClick={() => onNavigate('history')}
-                className={`navbar-link ${currentPage === 'history' ? 'navbar-link-active' : ''}`}
-              >
-                <Clock size={18} />
-                <span>History</span>
-              </div>
-            </>
-          )}
-        </div>
 
-        <div className="navbar-user">
           {user ? (
             <>
-              <div className="navbar-avatar">
-                {user.email[0].toUpperCase()}
+              <div className="navbar-avatar" title={user.user_metadata?.nickname || user.email}>
+                {(user.user_metadata?.nickname || user.email)[0].toUpperCase()}
               </div>
               <button onClick={onSignOut} className="navbar-signout">
                 <LogOut size={16} />
@@ -66,9 +95,10 @@ export default function Navbar({ user, onSignOut, currentPage, onNavigate }) {
           ) : (
             <button 
               onClick={() => onNavigate('signin')} 
-              className="navbar-signout"
+              className={`navbar-signin ${currentPage === 'signin' ? 'navbar-signin-active' : ''}`}
             >
-              Sign In
+              <LogIn size={16} />
+              <span>Sign In</span>
             </button>
           )}
         </div>
@@ -76,3 +106,5 @@ export default function Navbar({ user, onSignOut, currentPage, onNavigate }) {
     </nav>
   )
 }
+
+export default Navbar
