@@ -31,22 +31,42 @@ export const useBookmarks = (user) => {
   }
 
   const addBookmark = async (media) => {
-    try {
-      const { error } = await supabase.from('bookmarks').insert({
-        media_id: media.id.toString(),
-        media_type: media.media_type,
-        title: media.title || media.name,
-        poster_path: media.poster_path
-      })
+    if (!user?.id) {
+      alert('Please sign in to bookmark')
+      return
+    }
 
-      if (error) throw error
+    try {
+      const { data, error } = await supabase
+        .from('bookmarks')
+        .insert([{
+          user_id: user.id,
+          media_id: media.id.toString(),
+          media_type: media.media_type,
+          title: media.title || media.name,
+          poster_path: media.poster_path
+        }])
+        .select()
+
+      if (error) {
+        // Handle duplicate key error gracefully
+        if (error.code === '23505') {
+          console.log('Already bookmarked')
+          return
+        }
+        throw error
+      }
+
       await fetchBookmarks()
     } catch (error) {
       console.error('Error adding bookmark:', error)
+      alert('Failed to add bookmark')
     }
   }
 
   const removeBookmark = async (mediaId) => {
+    if (!user?.id) return
+
     try {
       const { error } = await supabase
         .from('bookmarks')

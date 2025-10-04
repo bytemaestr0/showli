@@ -32,34 +32,24 @@ export const useWatchHistory = (user) => {
   }
 
   const addToHistory = async (media) => {
+    if (!user?.id) return
+
     try {
-      // Check if already exists
-      const { data: existing } = await supabase
+      // Use upsert to handle duplicates automatically
+      const { error } = await supabase
         .from('watch_history')
-        .select('id')
-        .eq('media_id', media.id.toString())
-        .single()
-
-      if (existing) {
-        // Update watched_at
-        const { error } = await supabase
-          .from('watch_history')
-          .update({ watched_at: new Date().toISOString() })
-          .eq('id', existing.id)
-
-        if (error) throw error
-      } else {
-        // Insert new
-        const { error } = await supabase.from('watch_history').insert({
+        .upsert({
+          user_id: user.id,
           media_id: media.id.toString(),
           media_type: media.media_type,
           title: media.title || media.name,
-          poster_path: media.poster_path
+          poster_path: media.poster_path,
+          watched_at: new Date().toISOString()
+        }, {
+          onConflict: 'user_id,media_id'
         })
 
-        if (error) throw error
-      }
-
+      if (error) throw error
       await fetchHistory()
     } catch (error) {
       console.error('Error adding to history:', error)
