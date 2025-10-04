@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { tmdbApi } from '../services/tmdbApi'
 import MediaCard from '../components/MediaCard'
 import SearchBar from '../components/SearchBar'
+import Carousel from '../components/Carousel'
 import '../styles/home.css'
 
 function Home({ onMediaSelect, user, continueWatching = [] }) {
@@ -69,19 +70,9 @@ function Home({ onMediaSelect, user, continueWatching = [] }) {
       <div className="home-content">
         {searchResults.length > 0 ? (
           <div className="home-section">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h2 className="home-section-title">Search Results</h2>
-              <button 
-                onClick={clearSearch}
-                style={{
-                  background: '#2a2a2a',
-                  color: 'white',
-                  border: 'none',
-                  padding: '0.5rem 1rem',
-                  borderRadius: '0.25rem',
-                  cursor: 'pointer'
-                }}
-              >
+            <div className="home-search-header">
+              <h2 className="home-section-title" style={{ padding: 0 }}>Search Results</h2>
+              <button onClick={clearSearch} className="home-clear-search">
                 Clear Search
               </button>
             </div>
@@ -101,64 +92,50 @@ function Home({ onMediaSelect, user, continueWatching = [] }) {
             {user && continueWatching.length > 0 && (
               <div className="home-section">
                 <h2 className="home-section-title">Continue Watching</h2>
-                <div className="home-grid">
-                  {continueWatching.slice(0, 6).map((item) => (
-                    <MediaCard
-                      key={item.id}
-                      media={{
-                        id: parseInt(item.media_id),
-                        title: item.title,
-                        name: item.title,
-                        poster_path: item.poster_path,
-                        media_type: item.media_type
-                      }}
-                      onClick={onMediaSelect}
-                    />
-                  ))}
-                </div>
+                <Carousel
+                  items={continueWatching.slice(0, 12).map(item => ({
+                    id: parseInt(item.media_id),
+                    title: item.title,
+                    name: item.title,
+                    poster_path: item.poster_path,
+                    media_type: item.media_type
+                  }))}
+                  onMediaSelect={onMediaSelect}
+                />
               </div>
             )}
 
             {/* Trending Now Section */}
             <div className="home-section">
               <h2 className="home-section-title">Trending Now</h2>
-              <div className="home-grid">
-                {trending.slice(0, 12).map((item) => (
-                  <MediaCard
-                    key={item.id}
-                    media={item}
-                    onClick={onMediaSelect}
-                  />
-                ))}
-              </div>
+              <Carousel
+                items={trending.slice(0, 20)}
+                onMediaSelect={onMediaSelect}
+              />
             </div>
 
             {/* Popular Movies Section */}
             <div className="home-section">
               <h2 className="home-section-title">Popular Movies</h2>
-              <div className="home-grid">
-                {movies.slice(0, 12).map((item) => (
-                  <MediaCard
-                    key={item.id}
-                    media={{ ...item, media_type: 'movie' }}
-                    onClick={onMediaSelect}
-                  />
-                ))}
-              </div>
+              <Carousel
+                items={movies.slice(0, 20).map(item => ({
+                  ...item,
+                  media_type: 'movie'
+                }))}
+                onMediaSelect={onMediaSelect}
+              />
             </div>
 
             {/* Top Rated TV Shows Section */}
             <div className="home-section">
               <h2 className="home-section-title">Top Rated TV Shows</h2>
-              <div className="home-grid">
-                {tvShows.slice(0, 12).map((item) => (
-                  <MediaCard
-                    key={item.id}
-                    media={{ ...item, media_type: 'tv' }}
-                    onClick={onMediaSelect}
-                  />
-                ))}
-              </div>
+              <Carousel
+                items={tvShows.slice(0, 20).map(item => ({
+                  ...item,
+                  media_type: 'tv'
+                }))}
+                onMediaSelect={onMediaSelect}
+              />
             </div>
           </>
         )}

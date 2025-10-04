@@ -1,9 +1,9 @@
 import { Film } from 'lucide-react'
-import MediaCard from '../components/MediaCard'
+import Carousel from '../components/Carousel'
 import '../styles/home.css'
 import '../styles/components.css'
 
-export default function Bookmarks({ bookmarks, loading, onMediaSelect }) {
+function Bookmarks({ bookmarks, loading, onMediaSelect }) {
   if (loading) {
     return (
       <div className="home-container">
@@ -11,6 +11,14 @@ export default function Bookmarks({ bookmarks, loading, onMediaSelect }) {
       </div>
     )
   }
+
+  const bookmarkItems = bookmarks.map(bookmark => ({
+    id: parseInt(bookmark.media_id),
+    title: bookmark.title,
+    name: bookmark.title,
+    poster_path: bookmark.poster_path,
+    media_type: bookmark.media_type
+  }))
 
   return (
     <div className="home-container">
@@ -27,24 +35,12 @@ export default function Bookmarks({ bookmarks, loading, onMediaSelect }) {
               </p>
             </div>
           ) : (
-            <div className="home-grid">
-              {bookmarks.map((bookmark) => (
-                <MediaCard
-                  key={bookmark.id}
-                  media={{
-                    id: parseInt(bookmark.media_id),
-                    title: bookmark.title,
-                    name: bookmark.title,
-                    poster_path: bookmark.poster_path,
-                    media_type: bookmark.media_type
-                  }}
-                  onClick={onMediaSelect}
-                />
-              ))}
-            </div>
+            <Carousel items={bookmarkItems} onMediaSelect={onMediaSelect} />
           )}
         </div>
       </div>
     </div>
   )
 }
+
+export default Bookmarks

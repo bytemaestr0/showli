@@ -1,9 +1,9 @@
 import { Clock } from 'lucide-react'
-import MediaCard from '../components/MediaCard'
+import Carousel from '../components/Carousel'
 import '../styles/home.css'
 import '../styles/components.css'
 
-export default function History({ history, loading, onMediaSelect }) {
+function History({ history, loading, onMediaSelect }) {
   if (loading) {
     return (
       <div className="home-container">
@@ -11,6 +11,14 @@ export default function History({ history, loading, onMediaSelect }) {
       </div>
     )
   }
+
+  const historyItems = history.map(item => ({
+    id: parseInt(item.media_id),
+    title: item.title,
+    name: item.title,
+    poster_path: item.poster_path,
+    media_type: item.media_type
+  }))
 
   return (
     <div className="home-container">
@@ -27,24 +35,12 @@ export default function History({ history, loading, onMediaSelect }) {
               </p>
             </div>
           ) : (
-            <div className="home-grid">
-              {history.map((item) => (
-                <MediaCard
-                  key={item.id}
-                  media={{
-                    id: parseInt(item.media_id),
-                    title: item.title,
-                    name: item.title,
-                    poster_path: item.poster_path,
-                    media_type: item.media_type
-                  }}
-                  onClick={onMediaSelect}
-                />
-              ))}
-            </div>
+            <Carousel items={historyItems} onMediaSelect={onMediaSelect} />
           )}
         </div>
       </div>
     </div>
   )
 }
+
+export default History
