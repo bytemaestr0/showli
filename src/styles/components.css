@@ -137,9 +137,9 @@
 
 .search-bar-container {
   position: relative;
-  width: 100%;
-  max-width: 600px;
-}
+  width: calc(100%-1rem);      
+  margin: 0.5rem;
+  box-sizing: border-box;}
 
 .search-bar-input {
   width: 100%;
