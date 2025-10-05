@@ -6,14 +6,12 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
       console.log('Initial session:', session?.user ? 'Logged in' : 'Not logged in')
       setLoading(false)
     })
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         console.log('Auth event:', event)
@@ -34,17 +32,36 @@ export const useAuth = () => {
         }
       }
     })
-    if (error) throw error
+    
+    if (error) {
+      // Handle duplicate email error
+      if (error.message.includes('User already registered') || 
+          error.message.includes('already been registered') ||
+          error.status === 422) {
+        throw new Error('This email is already registered. Please sign in instead.')
+      }
+      throw error
+    }
+
+    // Check if user was created but email confirmation is pending
+    if (data.user && !data.session) {
+      // This means email confirmation is required
+      return data
+    }
+
+    // If there's a session but the user already exists, throw error
+    if (data.user && data.user.identities && data.user.identities.length === 0) {
+      throw new Error('This email is already registered. Please sign in instead.')
+    }
+    
     console.log('Sign up successful:', data)
     return data
   }
 
   const signIn = async (identifier, password) => {
-    // Check if identifier is an email
     const isEmail = identifier.includes('@')
     
     if (isEmail) {
-      // Sign in with email
       const { data, error } = await supabase.auth.signInWithPassword({ 
         email: identifier, 
         password 
@@ -53,31 +70,15 @@ export const useAuth = () => {
       console.log('Sign in successful:', data)
       return data
     } else {
-      // Sign in with nickname - need to find the email first
-      // Query users by nickname from user metadata
-      const { data: users, error: queryError } = await supabase
-        .from('auth.users')
-        .select('email')
-        .eq('raw_user_meta_data->>nickname', identifier)
-        .single()
-
-      if (queryError) {
-        // Fallback: try signing in assuming it's an email anyway
-        const { data, error } = await supabase.auth.signInWithPassword({ 
-          email: identifier, 
-          password 
-        })
-        if (error) throw new Error('Invalid nickname/email or password')
-        return data
-      }
-
-      // Sign in with the found email
       const { data, error } = await supabase.auth.signInWithPassword({ 
-        email: users.email, 
+        email: identifier, 
         password 
       })
-      if (error) throw error
-      console.log('Sign in successful:', data)
+      
+      if (error) {
+        throw new Error('Invalid nickname/email or password')
+      }
+      
       return data
     }
   }

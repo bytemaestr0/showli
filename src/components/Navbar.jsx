@@ -60,7 +60,6 @@ function Navbar({ user, onSignOut, currentPage, onNavigate, onSearch }) {
           </div>
         </div>
 
-        {/* Search Bar - Centered */}
         <form onSubmit={handleSearchSubmit} className="navbar-search">
           <div className="navbar-search-wrapper">
             <Search className="navbar-search-icon" size={20} />
@@ -85,7 +84,11 @@ function Navbar({ user, onSignOut, currentPage, onNavigate, onSearch }) {
 
           {user ? (
             <>
-              <div className="navbar-avatar" title={user.user_metadata?.nickname || user.email}>
+              <div 
+                className="navbar-avatar" 
+                title={user.user_metadata?.nickname || user.email}
+                onClick={() => onNavigate('profile')}
+              >
                 {(user.user_metadata?.nickname || user.email)[0].toUpperCase()}
               </div>
               <button onClick={onSignOut} className="navbar-signout">

@@ -9,15 +9,27 @@ function Player({
   user, 
   isBookmarked, 
   onToggleBookmark,
-  onAddToHistory 
+  onAddToHistory,
+  getProgress,
+  updateProgress
 }) {
   const [details, setDetails] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [initialProgress, setInitialProgress] = useState(null)
 
   useEffect(() => {
     loadDetails()
-    if (user) {
-      onAddToHistory(media)
+    
+    // Get initial progress for TV shows if user is logged in
+    if (user && media.media_type === 'tv' && getProgress) {
+      const progress = getProgress(media.id)
+      setInitialProgress(progress)
+    }
+    
+    // Add to history when component mounts
+    if (user && onAddToHistory) {
+      const progress = getProgress ? getProgress(media.id) : { season: 1, episode: 1 }
+      onAddToHistory(media, progress.season, progress.episode)
     }
   }, [media.id])
 
@@ -29,6 +41,12 @@ function Player({
       console.error('Error loading details:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleProgressUpdate = (season, episode) => {
+    if (user && updateProgress && media.media_type === 'tv') {
+      updateProgress(media.id, season, episode)
     }
   }
 
@@ -53,6 +71,9 @@ function Player({
           mediaType={media.media_type}
           tmdbId={media.id}
           totalSeasons={totalSeasons}
+          user={user}
+          initialProgress={initialProgress}
+          onProgressUpdate={handleProgressUpdate}
         />
 
         <div className="player-info">

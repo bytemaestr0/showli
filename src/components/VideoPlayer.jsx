@@ -1,32 +1,30 @@
 import { useState, useEffect } from 'react'
 import { videoSources } from '../services/videoSources'
+import { usePlayerState } from '../hooks/usePlayerState'
 import '../styles/player.css'
 
-function VideoPlayer({ mediaType, tmdbId, totalSeasons = 1 }) {
-  const [currentSource, setCurrentSource] = useState('vidsrc')
-  const [season, setSeason] = useState(1)
-  const [episode, setEpisode] = useState(1)
+function VideoPlayer({ mediaType, tmdbId, totalSeasons = 1, user, initialProgress, onProgressUpdate }) {
+  const { source, season, episode, updateSource, updateSeason, updateEpisode } = usePlayerState(
+    mediaType, 
+    tmdbId, 
+    user, 
+    initialProgress
+  )
   const [seasonData, setSeasonData] = useState([])
   const [episodeCount, setEpisodeCount] = useState(20)
-
-  // Load last used source on mount
-  useEffect(() => {
-    const savedSource = localStorage.getItem('lastSource')
-    if (savedSource) {
-      setCurrentSource(savedSource)
-    }
-  }, [])
-
-  // Save source to localStorage when changed
-  useEffect(() => {
-    localStorage.setItem('lastSource', currentSource)
-  }, [currentSource])
 
   useEffect(() => {
     if (mediaType === 'tv') {
       fetchSeasonData()
     }
   }, [mediaType, tmdbId, season])
+
+  // Update progress in database when season/episode changes
+  useEffect(() => {
+    if (user && mediaType === 'tv' && onProgressUpdate) {
+      onProgressUpdate(season, episode)
+    }
+  }, [season, episode, user, mediaType, onProgressUpdate])
 
   const fetchSeasonData = async () => {
     try {
@@ -45,16 +43,33 @@ function VideoPlayer({ mediaType, tmdbId, totalSeasons = 1 }) {
   const sources = videoSources.getEmbedUrls(mediaType, tmdbId, season, episode)
 
   const handleSeasonChange = (newSeason) => {
-    setSeason(Number(newSeason))
-    setEpisode(1)
+    updateSeason(Number(newSeason))
+    updateEpisode(1) // Reset to episode 1 when changing season
+  }
+
+  const handleEpisodeChange = (newEpisode) => {
+    updateEpisode(Number(newEpisode))
+  }
+
+  const handleSourceChange = (newSource) => {
+    updateSource(newSource)
+  }
+
+  const handleNextEpisode = () => {
+    if (episode < episodeCount) {
+      updateEpisode(episode + 1)
+    } else if (season < totalSeasons) {
+      updateSeason(season + 1)
+      updateEpisode(1)
+    }
   }
 
   return (
     <div>
       <div className="player-video-container">
         <iframe
-          key={`${currentSource}-${season}-${episode}`}
-          src={sources[currentSource]}
+          key={`${source}-${season}-${episode}`}
+          src={sources[source]}
           className="player-iframe"
           allowFullScreen
           title="Video Player"
@@ -63,34 +78,44 @@ function VideoPlayer({ mediaType, tmdbId, totalSeasons = 1 }) {
 
       <div className="player-controls">
         <button
-          onClick={() => setCurrentSource('vidsrc')}
+          onClick={() => handleSourceChange('vidsrc')}
           className={`player-source-btn ${
-            currentSource === 'vidsrc'
-              ? 'player-source-btn-active'
+            source === 'vidsrc' 
+              ? 'player-source-btn-active' 
               : 'player-source-btn-inactive'
           }`}
         >
-          ⭐ Server 1
+          VidSrc
         </button>
         <button
-          onClick={() => setCurrentSource('vidlink')}
+          onClick={() => handleSourceChange('vidsrcpro')}
           className={`player-source-btn ${
-            currentSource === 'vidlink'
-              ? 'player-source-btn-active'
+            source === 'vidsrcpro' 
+              ? 'player-source-btn-active' 
               : 'player-source-btn-inactive'
           }`}
         >
-          Server 2
+          VidSrc Pro
         </button>
         <button
-          onClick={() => setCurrentSource('superembed')}
+          onClick={() => handleSourceChange('embedsu')}
           className={`player-source-btn ${
-            currentSource === 'superembed'
-              ? 'player-source-btn-active'
+            source === 'embedsu' 
+              ? 'player-source-btn-active' 
               : 'player-source-btn-inactive'
           }`}
         >
-          ⭐ Server 3
+          Embed.su
+        </button>
+        <button
+          onClick={() => handleSourceChange('autoembed')}
+          className={`player-source-btn ${
+            source === 'autoembed' 
+              ? 'player-source-btn-active' 
+              : 'player-source-btn-inactive'
+          }`}
+        >
+          AutoEmbed
         </button>
       </div>
 
@@ -98,8 +123,8 @@ function VideoPlayer({ mediaType, tmdbId, totalSeasons = 1 }) {
         <div className="player-episode-selector">
           <div className="player-selector-group">
             <label className="player-selector-label">Season</label>
-            <select
-              value={season}
+            <select 
+              value={season} 
               onChange={(e) => handleSeasonChange(e.target.value)}
               className="player-selector"
             >
@@ -113,14 +138,14 @@ function VideoPlayer({ mediaType, tmdbId, totalSeasons = 1 }) {
 
           <div className="player-selector-group">
             <label className="player-selector-label">Episode</label>
-            <select
-              value={episode}
-              onChange={(e) => setEpisode(Number(e.target.value))}
+            <select 
+              value={episode} 
+              onChange={(e) => handleEpisodeChange(e.target.value)}
               className="player-selector"
             >
               {Array.from({ length: episodeCount }, (_, i) => i + 1).map((ep) => (
                 <option key={ep} value={ep}>
-                  {ep}
+                  Episode {ep}
                   {seasonData[ep - 1] && ` - ${seasonData[ep - 1].name}`}
                 </option>
               ))}
@@ -128,14 +153,7 @@ function VideoPlayer({ mediaType, tmdbId, totalSeasons = 1 }) {
           </div>
 
           <button
-            onClick={() => {
-              if (episode < episodeCount) {
-                setEpisode(episode + 1)
-              } else if (season < totalSeasons) {
-                setSeason(season + 1)
-                setEpisode(1)
-              }
-            }}
+            onClick={handleNextEpisode}
             className="player-next-btn"
             disabled={episode >= episodeCount && season >= totalSeasons}
           >
@@ -148,4 +166,3 @@ function VideoPlayer({ mediaType, tmdbId, totalSeasons = 1 }) {
 }
 
 export default VideoPlayer
-

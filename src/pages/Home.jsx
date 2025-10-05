@@ -52,7 +52,8 @@ function Home({ onMediaSelect, user, continueWatching = [], searchResults, onCle
 
   return (
     <div className="home-container">
-      {featured && (
+      {/* Only show hero section when NOT searching */}
+      {searchResults.length === 0 && featured && (
         <div 
           className="home-hero"
           style={{
@@ -86,7 +87,7 @@ function Home({ onMediaSelect, user, continueWatching = [], searchResults, onCle
         </div>
       )}
 
-      <div className="home-content">
+      <div className="home-content" style={{ paddingTop: searchResults.length > 0 ? '2rem' : '0' }}>
         {searchResults.length > 0 ? (
           <div className="home-section">
             <div className="home-search-header">
@@ -107,6 +108,7 @@ function Home({ onMediaSelect, user, continueWatching = [], searchResults, onCle
           </div>
         ) : (
           <>
+            {/* Trending Now Section */}
             <div className="home-section">
               <h2 className="home-section-title">Trending Now</h2>
               <Carousel
@@ -115,6 +117,7 @@ function Home({ onMediaSelect, user, continueWatching = [], searchResults, onCle
               />
             </div>
 
+            {/* Popular Movies Section */}
             <div className="home-section">
               <h2 className="home-section-title">Popular Movies</h2>
               <Carousel
@@ -126,6 +129,7 @@ function Home({ onMediaSelect, user, continueWatching = [], searchResults, onCle
               />
             </div>
 
+            {/* Top Rated TV Shows Section */}
             <div className="home-section">
               <h2 className="home-section-title">Top Rated TV Shows</h2>
               <Carousel
@@ -137,19 +141,38 @@ function Home({ onMediaSelect, user, continueWatching = [], searchResults, onCle
               />
             </div>
 
+            {/* Continue Watching Section */}
             {user && continueWatching.length > 0 && (
               <div className="home-section">
                 <h2 className="home-section-title">Continue Watching</h2>
-                <Carousel
-                  items={continueWatching.slice(0, 20).map(item => ({
-                    id: parseInt(item.media_id),
-                    title: item.title,
-                    name: item.title,
-                    poster_path: item.poster_path,
-                    media_type: item.media_type
-                  }))}
-                  onMediaSelect={onMediaSelect}
-                />
+                {continueWatching.length >= 3 ? (
+                  <Carousel
+                    items={continueWatching.slice(0, 20).map(item => ({
+                      id: parseInt(item.media_id),
+                      title: item.title,
+                      name: item.title,
+                      poster_path: item.poster_path,
+                      media_type: item.media_type
+                    }))}
+                    onMediaSelect={onMediaSelect}
+                  />
+                ) : (
+                  <div className="home-grid">
+                    {continueWatching.map(item => (
+                      <MediaCard
+                        key={item.id}
+                        media={{
+                          id: parseInt(item.media_id),
+                          title: item.title,
+                          name: item.title,
+                          poster_path: item.poster_path,
+                          media_type: item.media_type
+                        }}
+                        onClick={onMediaSelect}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </>

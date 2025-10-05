@@ -12,6 +12,34 @@
   z-index: 10;
 }
 
+.media-card-remove {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 2rem;
+  height: 2rem;
+  background: rgba(0, 0, 0, 0.8);
+  border: none;
+  border-radius: 50%;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  opacity: 0;
+  transition: all 0.2s;
+}
+
+.media-card:hover .media-card-remove {
+  opacity: 1;
+}
+
+.media-card-remove:hover {
+  background: #dc2626;
+  transform: scale(1.1);
+}
+
 .media-card-image {
   width: 100%;
   aspect-ratio: 2 / 3;

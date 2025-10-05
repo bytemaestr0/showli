@@ -5,19 +5,48 @@ import Player from './pages/Player'
 import SignIn from './pages/SignIn'
 import Bookmarks from './pages/Bookmarks'
 import History from './pages/History'
+import Profile from './pages/Profile'
 import { useAuth } from './hooks/useAuth'
 import { useBookmarks } from './hooks/useBookmarks'
 import { useWatchHistory } from './hooks/useWatchHistory'
 import { tmdbApi } from './services/tmdbApi'
 
 function App() {
-  const [currentPage, setCurrentPage] = useState('home')
-  const [selectedMedia, setSelectedMedia] = useState(null)
+  const [currentPage, setCurrentPage] = useState(() => {
+    return sessionStorage.getItem('currentPage') || 'home'
+  })
+  const [selectedMedia, setSelectedMedia] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem('selectedMedia')
+      return saved ? JSON.parse(saved) : null
+    } catch {
+      return null
+    }
+  })
   const [searchResults, setSearchResults] = useState([])
   
   const { user, loading: authLoading, signIn, signUp, signOut } = useAuth()
   const { bookmarks, loading: bookmarksLoading, addBookmark, removeBookmark, isBookmarked } = useBookmarks(user)
-  const { history, loading: historyLoading, addToHistory } = useWatchHistory(user)
+  const { 
+    history, 
+    loading: historyLoading, 
+    addToHistory, 
+    updateProgress,
+    getProgress,
+    removeFromHistory 
+  } = useWatchHistory(user)
+
+  useEffect(() => {
+    sessionStorage.setItem('currentPage', currentPage)
+  }, [currentPage])
+
+  useEffect(() => {
+    if (selectedMedia) {
+      sessionStorage.setItem('selectedMedia', JSON.stringify(selectedMedia))
+    } else {
+      sessionStorage.removeItem('selectedMedia')
+    }
+  }, [selectedMedia])
 
   const handleSearch = async (query) => {
     try {
@@ -54,8 +83,16 @@ function App() {
     }
   }
 
+  const handleRemoveBookmark = async (media) => {
+    await removeBookmark(media.id)
+  }
+
+  const handleRemoveHistory = async (media) => {
+    await removeFromHistory(media.id)
+  }
+
   const handleNavigate = (page) => {
-    if ((page === 'bookmarks' || page === 'history') && !user) {
+    if ((page === 'bookmarks' || page === 'history' || page === 'profile') && !user) {
       setCurrentPage('signin')
       return
     }
@@ -67,6 +104,8 @@ function App() {
   const handleSignOut = async () => {
     await signOut()
     setCurrentPage('home')
+    setSelectedMedia(null)
+    sessionStorage.clear()
   }
 
   const handleAuthSuccess = () => {
@@ -115,6 +154,8 @@ function App() {
           isBookmarked={isBookmarked}
           onToggleBookmark={handleToggleBookmark}
           onAddToHistory={addToHistory}
+          getProgress={getProgress}
+          updateProgress={updateProgress}
         />
       )}
 
@@ -131,6 +172,7 @@ function App() {
           bookmarks={bookmarks}
           loading={bookmarksLoading}
           onMediaSelect={handleMediaSelect}
+          onRemove={handleRemoveBookmark}
         />
       )}
 
@@ -139,6 +181,14 @@ function App() {
           history={history}
           loading={historyLoading}
           onMediaSelect={handleMediaSelect}
+          onRemove={handleRemoveHistory}
+        />
+      )}
+
+      {currentPage === 'profile' && (
+        <Profile 
+          user={user}
+          history={history}
         />
       )}
     </div>

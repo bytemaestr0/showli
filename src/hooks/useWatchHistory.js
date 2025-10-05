@@ -31,11 +31,10 @@ export const useWatchHistory = (user) => {
     }
   }
 
-  const addToHistory = async (media) => {
+  const addToHistory = async (media, season = 1, episode = 1) => {
     if (!user?.id) return
 
     try {
-      // Use upsert to handle duplicates automatically
       const { error } = await supabase
         .from('watch_history')
         .upsert({
@@ -44,7 +43,9 @@ export const useWatchHistory = (user) => {
           media_type: media.media_type,
           title: media.title || media.name,
           poster_path: media.poster_path,
-          watched_at: new Date().toISOString()
+          watched_at: new Date().toISOString(),
+          season: season,
+          episode: episode
         }, {
           onConflict: 'user_id,media_id'
         })
@@ -56,5 +57,56 @@ export const useWatchHistory = (user) => {
     }
   }
 
-  return { history, loading, addToHistory, refetch: fetchHistory }
+  const updateProgress = async (mediaId, season, episode) => {
+    if (!user?.id) return
+
+    try {
+      const { error } = await supabase
+        .from('watch_history')
+        .update({
+          season: season,
+          episode: episode,
+          watched_at: new Date().toISOString()
+        })
+        .eq('user_id', user.id)
+        .eq('media_id', mediaId.toString())
+
+      if (error) throw error
+      await fetchHistory()
+    } catch (error) {
+      console.error('Error updating progress:', error)
+    }
+  }
+
+  const getProgress = (mediaId) => {
+    const item = history.find(h => h.media_id === mediaId.toString())
+    return item ? { season: item.season || 1, episode: item.episode || 1 } : { season: 1, episode: 1 }
+  }
+
+  const removeFromHistory = async (mediaId) => {
+    if (!user?.id) return
+
+    try {
+      const { error } = await supabase
+        .from('watch_history')
+        .delete()
+        .eq('media_id', mediaId.toString())
+        .eq('user_id', user.id)
+
+      if (error) throw error
+      await fetchHistory()
+    } catch (error) {
+      console.error('Error removing from history:', error)
+    }
+  }
+
+  return { 
+    history, 
+    loading, 
+    addToHistory, 
+    updateProgress,
+    getProgress,
+    removeFromHistory, 
+    refetch: fetchHistory 
+  }
 }

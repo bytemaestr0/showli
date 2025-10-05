@@ -3,8 +3,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import MediaCard from './MediaCard'
 import '../styles/components.css'
 
-function Carousel({ items, onMediaSelect }) {
-  const [scrollPosition, setScrollPosition] = useState(0)
+function Carousel({ items, onMediaSelect, onRemove, showRemove = false }) {
   const carouselRef = useRef(null)
 
   const scroll = (direction) => {
@@ -12,8 +11,8 @@ function Carousel({ items, onMediaSelect }) {
 
     const container = carouselRef.current
     const cardWidth = container.querySelector('.media-card')?.offsetWidth || 200
-    const gap = 24 // 1.5rem in pixels
-    const scrollAmount = (cardWidth + gap) * 2 // Scroll 2 cards
+    const gap = 24
+    const scrollAmount = (cardWidth + gap) * 2
 
     if (direction === 'left') {
       container.scrollBy({ left: -scrollAmount, behavior: 'smooth' })
@@ -22,13 +21,6 @@ function Carousel({ items, onMediaSelect }) {
     }
   }
 
-  const handleScroll = () => {
-    if (carouselRef.current) {
-      setScrollPosition(carouselRef.current.scrollLeft)
-    }
-  }
-
-  // Duplicate items for infinite loop effect
   const loopedItems = [...items, ...items, ...items]
 
   return (
@@ -41,14 +33,15 @@ function Carousel({ items, onMediaSelect }) {
         <ChevronLeft size={32} />
       </button>
 
-      <div
-        ref={carouselRef}
-        className="carousel-track"
-        onScroll={handleScroll}
-      >
+      <div ref={carouselRef} className="carousel-track">
         {loopedItems.map((item, index) => (
           <div key={`${item.id}-${index}`} className="carousel-item">
-            <MediaCard media={item} onClick={onMediaSelect} />
+            <MediaCard 
+              media={item} 
+              onClick={onMediaSelect}
+              onRemove={onRemove}
+              showRemove={showRemove}
+            />
           </div>
         ))}
       </div>

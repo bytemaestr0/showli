@@ -1,9 +1,10 @@
 import { Clock } from 'lucide-react'
+import MediaCard from '../components/MediaCard'
 import Carousel from '../components/Carousel'
 import '../styles/home.css'
 import '../styles/components.css'
 
-function History({ history, loading, onMediaSelect }) {
+function History({ history, loading, onMediaSelect, onRemove }) {
   if (loading) {
     return (
       <div className="home-container">
@@ -20,6 +21,8 @@ function History({ history, loading, onMediaSelect }) {
     media_type: item.media_type
   }))
 
+  const useCarousel = historyItems.length >= 3
+
   return (
     <div className="home-container">
       <div className="home-content" style={{ paddingTop: '2rem' }}>
@@ -34,8 +37,25 @@ function History({ history, loading, onMediaSelect }) {
                 Your recently watched content will appear here
               </p>
             </div>
+          ) : useCarousel ? (
+            <Carousel 
+              items={historyItems} 
+              onMediaSelect={onMediaSelect}
+              onRemove={onRemove}
+              showRemove={true}
+            />
           ) : (
-            <Carousel items={historyItems} onMediaSelect={onMediaSelect} />
+            <div className="home-grid">
+              {historyItems.map((item) => (
+                <MediaCard
+                  key={item.id}
+                  media={item}
+                  onClick={onMediaSelect}
+                  onRemove={onRemove}
+                  showRemove={true}
+                />
+              ))}
+            </div>
           )}
         </div>
       </div>
