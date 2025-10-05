@@ -32,9 +32,16 @@ function Navbar({ user, onSignOut, currentPage, onNavigate, onSearch }) {
         <div className="navbar-left">
           <div 
             onClick={() => onNavigate('home')} 
-            className="navbar-logo"
+            className="navbar-logo-container"
           >
-            Show<span className="navbar-logo-highlight">LI</span>
+            <img 
+              src="/favicon.svg" 
+              alt="ShowLI" 
+              className="navbar-logo-icon"
+            />
+            <div className="navbar-logo">
+              Show<span className="navbar-logo-highlight">LI</span>
+            </div>
           </div>
 
           <div className="navbar-links">

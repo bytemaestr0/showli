@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { videoSources } from '../services/videoSources'
 import { usePlayerState } from '../hooks/usePlayerState'
+import { Star } from 'lucide-react'
 import '../styles/player.css'
 
 function VideoPlayer({ mediaType, tmdbId, totalSeasons = 1, user, initialProgress, onProgressUpdate }) {
@@ -19,7 +20,6 @@ function VideoPlayer({ mediaType, tmdbId, totalSeasons = 1, user, initialProgres
     }
   }, [mediaType, tmdbId, season])
 
-  // Update progress in database when season/episode changes
   useEffect(() => {
     if (user && mediaType === 'tv' && onProgressUpdate) {
       onProgressUpdate(season, episode)
@@ -44,7 +44,7 @@ function VideoPlayer({ mediaType, tmdbId, totalSeasons = 1, user, initialProgres
 
   const handleSeasonChange = (newSeason) => {
     updateSeason(Number(newSeason))
-    updateEpisode(1) // Reset to episode 1 when changing season
+    updateEpisode(1)
   }
 
   const handleEpisodeChange = (newEpisode) => {
@@ -77,45 +77,40 @@ function VideoPlayer({ mediaType, tmdbId, totalSeasons = 1, user, initialProgres
       </div>
 
       <div className="player-controls">
+        {/* Server 2 (vidlink) first */}
+        <button
+          onClick={() => handleSourceChange('vidlink')}
+          className={`player-source-btn ${
+            source === 'vidlink'
+              ? 'player-source-btn-active'
+              : 'player-source-btn-inactive'
+          }`}
+        >
+          ⭐ Server 1
+        </button>
+
+        {/* Server 1 (vidsrc) second, with star */}
         <button
           onClick={() => handleSourceChange('vidsrc')}
           className={`player-source-btn ${
-            source === 'vidsrc' 
-              ? 'player-source-btn-active' 
+            source === 'vidsrc'
+              ? 'player-source-btn-active'
               : 'player-source-btn-inactive'
           }`}
         >
-          VidSrc
+          Server 2
         </button>
+
+        {/* Server 3 (superembed) last, with star */}
         <button
-          onClick={() => handleSourceChange('vidsrcpro')}
+          onClick={() => handleSourceChange('superembed')}
           className={`player-source-btn ${
-            source === 'vidsrcpro' 
-              ? 'player-source-btn-active' 
+            source === 'superembed'
+              ? 'player-source-btn-active'
               : 'player-source-btn-inactive'
           }`}
         >
-          VidSrc Pro
-        </button>
-        <button
-          onClick={() => handleSourceChange('embedsu')}
-          className={`player-source-btn ${
-            source === 'embedsu' 
-              ? 'player-source-btn-active' 
-              : 'player-source-btn-inactive'
-          }`}
-        >
-          Embed.su
-        </button>
-        <button
-          onClick={() => handleSourceChange('autoembed')}
-          className={`player-source-btn ${
-            source === 'autoembed' 
-              ? 'player-source-btn-active' 
-              : 'player-source-btn-inactive'
-          }`}
-        >
-          AutoEmbed
+         ⭐ Server 3
         </button>
       </div>
 
@@ -123,8 +118,8 @@ function VideoPlayer({ mediaType, tmdbId, totalSeasons = 1, user, initialProgres
         <div className="player-episode-selector">
           <div className="player-selector-group">
             <label className="player-selector-label">Season</label>
-            <select 
-              value={season} 
+            <select
+              value={season}
               onChange={(e) => handleSeasonChange(e.target.value)}
               className="player-selector"
             >
@@ -138,8 +133,8 @@ function VideoPlayer({ mediaType, tmdbId, totalSeasons = 1, user, initialProgres
 
           <div className="player-selector-group">
             <label className="player-selector-label">Episode</label>
-            <select 
-              value={episode} 
+            <select
+              value={episode}
               onChange={(e) => handleEpisodeChange(e.target.value)}
               className="player-selector"
             >
@@ -166,3 +161,4 @@ function VideoPlayer({ mediaType, tmdbId, totalSeasons = 1, user, initialProgres
 }
 
 export default VideoPlayer
+
