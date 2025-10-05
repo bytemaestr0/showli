@@ -140,7 +140,7 @@ function VideoPlayer({ mediaType, tmdbId, totalSeasons = 1, user, initialProgres
             >
               {Array.from({ length: episodeCount }, (_, i) => i + 1).map((ep) => (
                 <option key={ep} value={ep}>
-                  Episode {ep}
+                  {ep}
                   {seasonData[ep - 1] && ` - ${seasonData[ep - 1].name}`}
                 </option>
               ))}
