@@ -17,14 +17,14 @@ export const usePlayerState = (mediaType, tmdbId, user, initialProgress = null) 
     // If user is logged in and we have initial progress, use that
     if (user && initialProgress) {
       return {
-        source: 'vidsrc',
+        source: 'vidlink',
         season: initialProgress.season || 1,
         episode: initialProgress.episode || 1
       }
     }
     
     return {
-      source: 'vidsrc',
+      source: 'vidlink',
       season: 1,
       episode: 1
     }

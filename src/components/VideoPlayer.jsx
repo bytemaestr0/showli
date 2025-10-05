@@ -77,7 +77,7 @@ function VideoPlayer({ mediaType, tmdbId, totalSeasons = 1, user, initialProgres
       </div>
 
       <div className="player-controls">
-        {/* Server 2 (vidlink) first */}
+        {/* Server 1 (vidlink) first */}
         <button
           onClick={() => handleSourceChange('vidlink')}
           className={`player-source-btn ${
@@ -89,7 +89,7 @@ function VideoPlayer({ mediaType, tmdbId, totalSeasons = 1, user, initialProgres
           ⭐ Server 1
         </button>
 
-        {/* Server 1 (vidsrc) second, with star */}
+        {/* Server 2 (vidsrc) second, with star */}
         <button
           onClick={() => handleSourceChange('vidsrc')}
           className={`player-source-btn ${
