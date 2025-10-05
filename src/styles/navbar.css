@@ -116,7 +116,7 @@
   padding-left: 0.6rem;
   transition: all 0.3s;
   width: 100%;
-  max-width: 70%;
+  max-width: 50%;
 }
 
 .navbar-search-wrapper:focus-within {
