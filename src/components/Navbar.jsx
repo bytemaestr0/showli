@@ -72,7 +72,7 @@ function Navbar({ user, onSignOut, currentPage, onNavigate, onSearch }) {
             <Search className="navbar-search-icon" size={20} />
             <input
               type="text"
-              placeholder="Search Denis penis PULA and TV shows..."
+              placeholder="Search movies and TV shows..."
               value={searchQuery}
               onChange={handleSearchChange}
               className="navbar-search-input"
