@@ -28,7 +28,7 @@ function Home({ onMediaSelect, user, continueWatching = [], searchResults, onCle
       setTrending(trendingResults)
       setMovies(moviesData.results || [])
       setTVShows(tvData.results || [])
-      
+
       if (trendingResults.length > 0) {
         setFeatured(trendingResults[0])
       }
@@ -52,9 +52,9 @@ function Home({ onMediaSelect, user, continueWatching = [], searchResults, onCle
 
   return (
     <div className="home-container">
-      {/* Only show hero section when NOT searching */}
+      {/* Hero section */}
       {searchResults.length === 0 && featured && (
-        <div 
+        <div
           className="home-hero"
           style={{
             backgroundImage: `url(${tmdbApi.getImageUrl(featured.backdrop_path, 'original')})`
@@ -63,19 +63,19 @@ function Home({ onMediaSelect, user, continueWatching = [], searchResults, onCle
           <div className="home-hero-content">
             <h1 className="home-hero-title">{featuredTitle}</h1>
             <p className="home-hero-overview">
-              {featuredOverview && featuredOverview.length > 150 
-                ? featuredOverview.substring(0, 150) + '...' 
+              {featuredOverview && featuredOverview.length > 150
+                ? featuredOverview.substring(0, 150) + '...'
                 : featuredOverview}
             </p>
             <div className="home-hero-buttons">
-              <button 
+              <button
                 className="home-hero-btn home-hero-btn-play"
                 onClick={() => onMediaSelect(featured)}
               >
                 <Play size={24} fill="currentColor" />
                 <span>Play</span>
               </button>
-              <button 
+              <button
                 className="home-hero-btn home-hero-btn-info"
                 onClick={() => onMediaSelect(featured)}
               >
@@ -178,8 +178,18 @@ function Home({ onMediaSelect, user, continueWatching = [], searchResults, onCle
           </>
         )}
       </div>
+
+      {/* Footer */}
+      <footer className="home-footer">
+        <p>
+          Watch unlimited movies and TV shows online for free. Stream the latest releases,
+          trending content, and classic favorites on <strong>ShowLi</strong>.
+        </p>
+        <p>© 2025 ShowLi. All rights reserved.</p>
+      </footer>
     </div>
   )
 }
 
 export default Home
+

@@ -16,7 +16,20 @@ function Player({
   const [details, setDetails] = useState(null)
   const [loading, setLoading] = useState(true)
   const [initialProgress, setInitialProgress] = useState(null)
-
+useEffect(() => {
+  if (details) {
+    const title = details.title || details.name
+    document.title = `Watch ${title} Free | ShowLI`
+    
+    // Add meta description
+    const metaDescription = document.querySelector('meta[name="description"]')
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 
+        `Watch ${title} online for free. ${details.overview?.substring(0, 150)}...`
+      )
+    }
+  }
+}, [details])
   useEffect(() => {
     loadDetails()
     
