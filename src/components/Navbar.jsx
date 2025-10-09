@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useLocation } from 'react-router-dom'
 import { Home, Bookmark, Clock, LogOut, Search, LogIn } from 'lucide-react'
 import '../styles/navbar.css'
@@ -16,7 +16,6 @@ function Navbar({ user, onSignOut, currentPage, onNavigate, onSearch }) {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Update search query from URL
   useEffect(() => {
     const params = new URLSearchParams(location.search)
     const searchParam = params.get('search')
@@ -27,18 +26,18 @@ function Navbar({ user, onSignOut, currentPage, onNavigate, onSearch }) {
     }
   }, [location.search])
 
-  const handleSearchSubmit = (e) => {
+  const handleSearchSubmit = useCallback((e) => {
     e.preventDefault()
     if (searchQuery.trim()) {
       onSearch(searchQuery)
     }
-  }
+  }, [searchQuery, onSearch])
 
-  const handleSearchChange = (e) => {
+  const handleSearchChange = useCallback((e) => {
     setSearchQuery(e.target.value)
-  }
+  }, [])
 
-  return (
+return (
     <nav className={`navbar-container ${scrolled ? 'navbar-scrolled' : ''}`}>
       <div className="navbar-content">
         <div className="navbar-left">

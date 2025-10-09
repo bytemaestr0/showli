@@ -26,6 +26,7 @@ function App() {
   })
   const [searchResults, setSearchResults] = useState([])
   const [searchQuery, setSearchQuery] = useState('')
+  const [navigatingTo, setNavigatingTo] = useState(null)
   
   const { user, loading: authLoading, signIn, signUp, signOut } = useAuth()
   const { bookmarks, loading: bookmarksLoading, addBookmark, removeBookmark, isBookmarked } = useBookmarks(user)
@@ -66,6 +67,13 @@ function App() {
       sessionStorage.removeItem('selectedMedia')
     }
   }, [selectedMedia])
+
+  // Handle protected route redirects
+  useEffect(() => {
+    if (!user && (location.pathname === '/bookmarks' || location.pathname === '/history' || location.pathname === '/profile')) {
+      navigate('/signin', { replace: true })
+    }
+  }, [user, location.pathname, navigate])
 
   const handleSearch = async (query) => {
     try {
@@ -112,8 +120,16 @@ function App() {
   }
 
   const handleNavigate = (page) => {
+    // Prevent multiple navigation calls
+    if (navigatingTo === page) {
+      return
+    }
+
+    setNavigatingTo(page)
+
     if ((page === 'bookmarks' || page === 'history' || page === 'profile') && !user) {
       navigate('/signin')
+      setNavigatingTo(null)
       return
     }
     
@@ -138,6 +154,7 @@ function App() {
     }
     
     window.scrollTo(0, 0)
+    setNavigatingTo(null)
   }
 
   const handleSignOut = async () => {
@@ -210,7 +227,17 @@ function App() {
                 getProgress={getProgress}
                 updateProgress={updateProgress}
               />
-            ) : null
+            ) : (
+              <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100vh',
+                color: 'white'
+              }}>
+                Loading player...
+              </div>
+            )
           } 
         />
 
@@ -235,9 +262,7 @@ function App() {
                 onMediaSelect={handleMediaSelect}
                 onRemove={handleRemoveBookmark}
               />
-            ) : (
-              navigate('/signin')
-            )
+            ) : null
           } 
         />
 
@@ -251,9 +276,7 @@ function App() {
                 onMediaSelect={handleMediaSelect}
                 onRemove={handleRemoveHistory}
               />
-            ) : (
-              navigate('/signin')
-            )
+            ) : null
           } 
         />
 
@@ -265,9 +288,7 @@ function App() {
                 user={user}
                 history={history}
               />
-            ) : (
-              navigate('/signin')
-            )
+            ) : null
           } 
         />
       </Routes>
