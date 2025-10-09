@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import Home from './pages/Home'
 import Player from './pages/Player'
@@ -12,9 +13,9 @@ import { useWatchHistory } from './hooks/useWatchHistory'
 import { tmdbApi } from './services/tmdbApi'
 
 function App() {
-  const [currentPage, setCurrentPage] = useState(() => {
-    return sessionStorage.getItem('currentPage') || 'home'
-  })
+  const navigate = useNavigate()
+  const location = useLocation()
+  
   const [selectedMedia, setSelectedMedia] = useState(() => {
     try {
       const saved = sessionStorage.getItem('selectedMedia')
@@ -24,22 +25,40 @@ function App() {
     }
   })
   const [searchResults, setSearchResults] = useState([])
+  const [searchQuery, setSearchQuery] = useState('')
   
   const { user, loading: authLoading, signIn, signUp, signOut } = useAuth()
   const { bookmarks, loading: bookmarksLoading, addBookmark, removeBookmark, isBookmarked } = useBookmarks(user)
-  const { 
-    history, 
-    loading: historyLoading, 
-    addToHistory, 
-    updateProgress,
-    getProgress,
-    removeFromHistory 
-  } = useWatchHistory(user)
+  const { history, loading: historyLoading, addToHistory, updateProgress, getProgress, removeFromHistory } = useWatchHistory(user)
 
+  // Get current page from URL
+  const getCurrentPage = () => {
+    const pathname = location.pathname
+    if (pathname === '/signin') return 'signin'
+    if (pathname === '/bookmarks') return 'bookmarks'
+    if (pathname === '/history') return 'history'
+    if (pathname === '/profile') return 'profile'
+    if (pathname.includes('/player')) return 'player'
+    return 'home'
+  }
+
+  const currentPage = getCurrentPage()
+
+  // Check for search query in URL
   useEffect(() => {
-    sessionStorage.setItem('currentPage', currentPage)
-  }, [currentPage])
+    const params = new URLSearchParams(location.search)
+    const searchParam = params.get('search')
+    
+    if (searchParam) {
+      setSearchQuery(searchParam)
+      handleSearch(searchParam)
+    } else {
+      setSearchResults([])
+      setSearchQuery('')
+    }
+  }, [location.search])
 
+  // Save selected media to sessionStorage
   useEffect(() => {
     if (selectedMedia) {
       sessionStorage.setItem('selectedMedia', JSON.stringify(selectedMedia))
@@ -61,18 +80,19 @@ function App() {
 
   const clearSearch = () => {
     setSearchResults([])
+    setSearchQuery('')
+    navigate('/')
   }
 
   const handleMediaSelect = (media) => {
     setSelectedMedia(media)
-    setCurrentPage('player')
-    clearSearch()
+    navigate(`/player/${media.media_type}/${media.id}`)
     window.scrollTo(0, 0)
   }
 
   const handleToggleBookmark = async (media) => {
     if (!user) {
-      setCurrentPage('signin')
+      navigate('/signin')
       return
     }
 
@@ -93,23 +113,49 @@ function App() {
 
   const handleNavigate = (page) => {
     if ((page === 'bookmarks' || page === 'history' || page === 'profile') && !user) {
-      setCurrentPage('signin')
+      navigate('/signin')
       return
     }
-    setCurrentPage(page)
-    clearSearch()
+    
+    switch (page) {
+      case 'home':
+        navigate('/')
+        break
+      case 'signin':
+        navigate('/signin')
+        break
+      case 'bookmarks':
+        navigate('/bookmarks')
+        break
+      case 'history':
+        navigate('/history')
+        break
+      case 'profile':
+        navigate('/profile')
+        break
+      default:
+        navigate('/')
+    }
+    
     window.scrollTo(0, 0)
   }
 
   const handleSignOut = async () => {
     await signOut()
-    setCurrentPage('home')
+    navigate('/')
     setSelectedMedia(null)
     sessionStorage.clear()
   }
 
   const handleAuthSuccess = () => {
-    setCurrentPage('home')
+    navigate('/')
+  }
+
+  const handleSearchSubmit = (query) => {
+    if (query.trim()) {
+      setSearchQuery(query)
+      navigate(`/?search=${encodeURIComponent(query)}`)
+    }
   }
 
   if (authLoading) {
@@ -134,63 +180,97 @@ function App() {
         onSignOut={handleSignOut}
         currentPage={currentPage}
         onNavigate={handleNavigate}
-        onSearch={handleSearch}
+        onSearch={handleSearchSubmit}
       />
 
-      {currentPage === 'home' && (
-        <Home 
-          onMediaSelect={handleMediaSelect}
-          user={user}
-          continueWatching={history}
-          searchResults={searchResults}
-          onClearSearch={clearSearch}
+      <Routes>
+        <Route 
+          path="/" 
+          element={
+            <Home 
+              onMediaSelect={handleMediaSelect}
+              user={user}
+              continueWatching={history}
+              searchResults={searchResults}
+              onClearSearch={clearSearch}
+            />
+          } 
         />
-      )}
 
-      {currentPage === 'player' && selectedMedia && (
-        <Player 
-          media={selectedMedia}
-          user={user}
-          isBookmarked={isBookmarked}
-          onToggleBookmark={handleToggleBookmark}
-          onAddToHistory={addToHistory}
-          getProgress={getProgress}
-          updateProgress={updateProgress}
+        <Route 
+          path="/player/:mediaType/:id" 
+          element={
+            selectedMedia ? (
+              <Player 
+                media={selectedMedia}
+                user={user}
+                isBookmarked={isBookmarked}
+                onToggleBookmark={handleToggleBookmark}
+                onAddToHistory={addToHistory}
+                getProgress={getProgress}
+                updateProgress={updateProgress}
+              />
+            ) : null
+          } 
         />
-      )}
 
-      {currentPage === 'signin' && (
-        <SignIn 
-          onSignIn={signIn}
-          onSignUp={signUp}
-          onSuccess={handleAuthSuccess}
+        <Route 
+          path="/signin" 
+          element={
+            <SignIn 
+              onSignIn={signIn}
+              onSignUp={signUp}
+              onSuccess={handleAuthSuccess}
+            />
+          } 
         />
-      )}
 
-      {currentPage === 'bookmarks' && (
-        <Bookmarks 
-          bookmarks={bookmarks}
-          loading={bookmarksLoading}
-          onMediaSelect={handleMediaSelect}
-          onRemove={handleRemoveBookmark}
+        <Route 
+          path="/bookmarks" 
+          element={
+            user ? (
+              <Bookmarks 
+                bookmarks={bookmarks}
+                loading={bookmarksLoading}
+                onMediaSelect={handleMediaSelect}
+                onRemove={handleRemoveBookmark}
+              />
+            ) : (
+              navigate('/signin')
+            )
+          } 
         />
-      )}
 
-      {currentPage === 'history' && (
-        <History 
-          history={history}
-          loading={historyLoading}
-          onMediaSelect={handleMediaSelect}
-          onRemove={handleRemoveHistory}
+        <Route 
+          path="/history" 
+          element={
+            user ? (
+              <History 
+                history={history}
+                loading={historyLoading}
+                onMediaSelect={handleMediaSelect}
+                onRemove={handleRemoveHistory}
+              />
+            ) : (
+              navigate('/signin')
+            )
+          } 
         />
-      )}
 
-      {currentPage === 'profile' && (
-        <Profile 
-          user={user}
-          history={history}
+        <Route 
+          path="/profile" 
+          element={
+            user ? (
+              <Profile 
+                user={user}
+                history={history}
+              />
+            ) : (
+              navigate('/signin')
+            )
+          } 
         />
-      )}
+      </Routes>
     </div>
   )
 }

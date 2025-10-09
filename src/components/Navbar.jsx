@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import { Home, Bookmark, Clock, LogOut, Search, LogIn } from 'lucide-react'
 import '../styles/navbar.css'
 
 function Navbar({ user, onSignOut, currentPage, onNavigate, onSearch }) {
   const [scrolled, setScrolled] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const location = useLocation()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -14,11 +16,21 @@ function Navbar({ user, onSignOut, currentPage, onNavigate, onSearch }) {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  // Update search query from URL
+  useEffect(() => {
+    const params = new URLSearchParams(location.search)
+    const searchParam = params.get('search')
+    if (searchParam) {
+      setSearchQuery(searchParam)
+    } else {
+      setSearchQuery('')
+    }
+  }, [location.search])
+
   const handleSearchSubmit = (e) => {
     e.preventDefault()
     if (searchQuery.trim()) {
       onSearch(searchQuery)
-      onNavigate('home')
     }
   }
 
