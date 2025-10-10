@@ -2,10 +2,23 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
-    <!-- Primary Meta Tags -->
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#667eea" />
+    <meta name="msapplication-TileColor" content="#667eea" />
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>ShowLI - Watch Free Movies & TV Shows Online | Stream Unlimited Content</title>
     <meta name="title" content="ShowLI - Watch Free Movies & TV Shows Online | Stream Unlimited Content" />
     <meta name="description" content="Watch unlimited movies and TV shows for free on ShowLI. Stream the latest releases, trending content, and classic favorites instantly. No subscription required." />
@@ -19,8 +32,17 @@
     <meta property="og:url" content="https://showli.xyz/" />
     <meta property="og:title" content="ShowLI - Watch Free Movies & TV Shows Online" />
     <meta property="og:description" content="Stream unlimited movies and TV shows for free. Watch the latest releases instantly." />
-    <meta property="og:image" content="https://showli.xyz/og-image.jpg" />
-      <!-- Canonical URL -->
+    <meta property="og:image" content="https://showli.xyz/og-image.png" />
+    <meta property="og:site_name" content="ShowLI" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://showli.xyz/" />
+    <meta property="twitter:title" content="ShowLI - Watch Free Movies & TV Shows Online" />
+    <meta property="twitter:description" content="Stream unlimited movies and TV shows for free. Watch the latest releases instantly." />
+    <meta property="twitter:image" content="https://showli.xyz/og-image.png" />
+    
+    <!-- Canonical URL -->
     <link rel="canonical" href="https://showli.xyz/" />
     
     <!-- Schema.org markup for Google -->
@@ -31,6 +53,7 @@
       "name": "ShowLI",
       "url": "https://showli.xyz",
       "description": "Watch unlimited movies and TV shows for free",
+      "image": "https://showli.xyz/og-image.png",
       "potentialAction": {
         "@type": "SearchAction",
         "target": "https://showli.xyz/?search={search_term_string}",
@@ -38,15 +61,16 @@
       }
     }
     </script>
+    
     <!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-NWPE3CWNBC"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-NWPE3CWNBC');
-  </script>
-</head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-NWPE3CWNBC"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-NWPE3CWNBC');
+    </script>
+  </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
