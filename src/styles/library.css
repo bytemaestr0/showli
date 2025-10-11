@@ -1,0 +1,129 @@
+.library-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.library-header {
+  margin-bottom: 2rem;
+}
+
+.library-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 0.5rem;
+}
+
+.library-count {
+  color: #a0a0a0;
+  font-size: 1rem;
+}
+
+.library-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 2rem;
+}
+
+.library-item {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.library-item-image {
+  position: relative;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.library-poster {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.library-item-image:hover .library-poster {
+  transform: scale(1.05);
+}
+
+.library-item-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 0.5rem;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.library-item-image:hover .library-item-overlay {
+  opacity: 1;
+}
+
+.library-remove-btn {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: #ef4444;
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.library-remove-btn:hover {
+  background: #dc2626;
+  transform: scale(1.1);
+}
+
+.library-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.library-item-title {
+  color: white;
+  font-weight: 600;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+  .library-content {
+    padding: 1rem 0.75rem;
+  }
+  
+  .library-title {
+    font-size: 1.5rem;
+  }
+  
+  .library-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .library-content {
+    padding: 1rem 0.5rem;
+  }
+  
+  .library-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1rem;
+  }
+}

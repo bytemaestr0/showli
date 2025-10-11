@@ -102,6 +102,14 @@
   width: 200px;
 }
 
+/* Carousel Styles */
+.carousel-container {
+  position: relative;
+  width: 100%;
+  padding: 0 3rem;
+}
+
+/* Show arrows on mobile */
 .carousel-arrow {
   position: absolute;
   top: 50%;
@@ -117,10 +125,42 @@
   cursor: pointer;
   z-index: 20;
   transition: all 0.3s;
-  opacity: 0;
+  opacity: 1;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
 }
 
+.carousel-arrow-left {
+  left: 0;
+}
+
+.carousel-arrow-right {
+  right: 0;
+}
+
+@media (max-width: 767px) {
+  .carousel-container {
+    padding: 0 2.5rem;
+  }
+  
+  .carousel-arrow {
+    width: 2.5rem;
+    opacity: 1;
+  }
+  
+  .carousel-item {
+    width: 160px;
+  }
+}
+
+@media (max-width: 480px) {
+  .carousel-container {
+    padding: 0 2rem;
+  }
+  
+  .carousel-item {
+    width: 140px;
+  }
+}
 .carousel-container:hover .carousel-arrow {
   opacity: 1;
 }
@@ -131,14 +171,6 @@
 
 .carousel-arrow:active {
   transform: translateY(-50%) scale(1.1);
-}
-
-.carousel-arrow-left {
-  left: 0;
-}
-
-.carousel-arrow-right {
-  right: 0;
 }
 
 /* Responsive carousel items */

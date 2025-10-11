@@ -11,11 +11,11 @@ import { useAuth } from './hooks/useAuth'
 import { useBookmarks } from './hooks/useBookmarks'
 import { useWatchHistory } from './hooks/useWatchHistory'
 import { tmdbApi } from './services/tmdbApi'
-
+import { useRating } from './hooks/useRating'
 function App() {
   const navigate = useNavigate()
   const location = useLocation()
-  
+
   const [selectedMedia, setSelectedMedia] = useState(() => {
     try {
       const saved = sessionStorage.getItem('selectedMedia')
@@ -31,7 +31,7 @@ function App() {
   const { user, loading: authLoading, signIn, signUp, signOut } = useAuth()
   const { bookmarks, loading: bookmarksLoading, addBookmark, removeBookmark, isBookmarked } = useBookmarks(user)
   const { history, loading: historyLoading, addToHistory, updateProgress, getProgress, removeFromHistory } = useWatchHistory(user)
-
+  const { ratings } = useRating(user)
   // Get current page from URL
   const getCurrentPage = () => {
     const pathname = location.pathname
@@ -253,33 +253,34 @@ function App() {
         />
 
         <Route 
-          path="/bookmarks" 
-          element={
-            user ? (
-              <Bookmarks 
-                bookmarks={bookmarks}
-                loading={bookmarksLoading}
-                onMediaSelect={handleMediaSelect}
-                onRemove={handleRemoveBookmark}
-              />
-            ) : null
-          } 
+    path="/bookmarks" 
+    element={
+      user ? (
+        <Bookmarks 
+          bookmarks={bookmarks}
+          loading={bookmarksLoading}
+          onMediaSelect={handleMediaSelect}
+          onRemove={handleRemoveBookmark}
+          user={user}
         />
+      ) : null
+    } 
+  />
 
-        <Route 
-          path="/history" 
-          element={
-            user ? (
-              <History 
-                history={history}
-                loading={historyLoading}
-                onMediaSelect={handleMediaSelect}
-                onRemove={handleRemoveHistory}
-              />
-            ) : null
-          } 
+  <Route 
+    path="/history" 
+    element={
+      user ? (
+        <History 
+          history={history}
+          loading={historyLoading}
+          onMediaSelect={handleMediaSelect}
+          onRemove={handleRemoveHistory}
+          user={user}
         />
-
+      ) : null
+    } 
+  />
         <Route 
           path="/profile" 
           element={

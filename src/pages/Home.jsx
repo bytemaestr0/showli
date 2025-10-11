@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { tmdbApi } from '../services/tmdbApi'
+import { Play, Info, Search } from 'lucide-react'
 import MediaCard from '../components/MediaCard'
 import Carousel from '../components/Carousel'
-import { Play, Info } from 'lucide-react'
 import '../styles/home.css'
 
 function Home({ onMediaSelect, user, continueWatching = [], searchResults, onClearSearch }) {
@@ -28,7 +28,7 @@ function Home({ onMediaSelect, user, continueWatching = [], searchResults, onCle
       setTrending(trendingResults)
       setMovies(moviesData.results || [])
       setTVShows(tvData.results || [])
-
+      
       if (trendingResults.length > 0) {
         setFeatured(trendingResults[0])
       }
@@ -52,9 +52,8 @@ function Home({ onMediaSelect, user, continueWatching = [], searchResults, onCle
 
   return (
     <div className="home-container">
-      {/* Hero section */}
       {searchResults.length === 0 && featured && (
-        <div
+        <div 
           className="home-hero"
           style={{
             backgroundImage: `url(${tmdbApi.getImageUrl(featured.backdrop_path, 'original')})`
@@ -63,19 +62,19 @@ function Home({ onMediaSelect, user, continueWatching = [], searchResults, onCle
           <div className="home-hero-content">
             <h1 className="home-hero-title">{featuredTitle}</h1>
             <p className="home-hero-overview">
-              {featuredOverview && featuredOverview.length > 150
-                ? featuredOverview.substring(0, 150) + '...'
+              {featuredOverview && featuredOverview.length > 150 
+                ? featuredOverview.substring(0, 150) + '...' 
                 : featuredOverview}
             </p>
             <div className="home-hero-buttons">
-              <button
+              <button 
                 className="home-hero-btn home-hero-btn-play"
                 onClick={() => onMediaSelect(featured)}
               >
                 <Play size={24} fill="currentColor" />
                 <span>Play</span>
               </button>
-              <button
+              <button 
                 className="home-hero-btn home-hero-btn-info"
                 onClick={() => onMediaSelect(featured)}
               >
@@ -106,9 +105,19 @@ function Home({ onMediaSelect, user, continueWatching = [], searchResults, onCle
               ))}
             </div>
           </div>
+        ) : searchResults.length === 0 && location.search.includes('search=') ? (
+          <div className="empty-state">
+            <Search className="empty-state-icon" size={80} />
+            <h3 className="empty-state-title">No Results Found</h3>
+            <p className="empty-state-text">
+              We couldn't find any movies or TV shows matching your search. Try different keywords!
+            </p>
+            <button onClick={onClearSearch} className="home-clear-search" style={{ marginTop: '1.5rem' }}>
+              Back to Home
+            </button>
+          </div>
         ) : (
           <>
-            {/* Trending Now Section */}
             <div className="home-section">
               <h2 className="home-section-title">Trending Now</h2>
               <Carousel
@@ -117,7 +126,6 @@ function Home({ onMediaSelect, user, continueWatching = [], searchResults, onCle
               />
             </div>
 
-            {/* Popular Movies Section */}
             <div className="home-section">
               <h2 className="home-section-title">Popular Movies</h2>
               <Carousel
@@ -129,7 +137,6 @@ function Home({ onMediaSelect, user, continueWatching = [], searchResults, onCle
               />
             </div>
 
-            {/* Top Rated TV Shows Section */}
             <div className="home-section">
               <h2 className="home-section-title">Top Rated TV Shows</h2>
               <Carousel
@@ -141,7 +148,6 @@ function Home({ onMediaSelect, user, continueWatching = [], searchResults, onCle
               />
             </div>
 
-            {/* Continue Watching Section */}
             {user && continueWatching.length > 0 && (
               <div className="home-section">
                 <h2 className="home-section-title">Continue Watching</h2>
@@ -178,18 +184,8 @@ function Home({ onMediaSelect, user, continueWatching = [], searchResults, onCle
           </>
         )}
       </div>
-
-      {/* Footer */}
-      <footer className="home-footer">
-        <p>
-          Watch unlimited movies and TV shows online for free. Stream the latest releases,
-          trending content, and classic favorites on <strong>ShowLi</strong>.
-        </p>
-        <p>© 2025 ShowLi. All rights reserved.</p>
-      </footer>
     </div>
   )
 }
 
 export default Home
-
