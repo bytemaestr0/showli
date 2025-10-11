@@ -1,12 +1,17 @@
 .rating-container {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 4rem;
+  width: 100%;
+  max-width: 1400px;      /* match .library-content */
+  margin: 0 auto;          /* center it */
+  padding: 0 0rem;         /* match horizontal padding */
 }
 
 .stars-wrapper {
   display: flex;
   gap: 0.25rem;
+  flex: 1;
 }
 
 .star-button {
@@ -19,6 +24,8 @@
   justify-content: center;
   color: #a0a0a0;
   transition: all 0.2s;
+  flex: 1;
+  height: 24px;
 }
 
 .star-button:hover {
@@ -30,10 +37,6 @@
   color: #fbbf24;
 }
 
-.star-button.half {
-  color: #fbbf24;
-}
-
 .star-button:disabled {
   cursor: not-allowed;
   opacity: 0.7;
@@ -41,12 +44,16 @@
 
 .star-button:disabled:hover {
   transform: scale(1);
+  color: #fbbf24;
 }
 
 .rating-text {
   color: #e5e5e5;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   min-width: 2.5rem;
-  text-align: center;
+  position: relative;
+  text-align: left;
+  right: 50px;
+  flex-shrink: 0;
 }

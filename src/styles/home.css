@@ -1,7 +1,6 @@
 .home-container {
   min-height: 100vh;
-  background: linear-gradient(to bottom, #0a0a0a, #1a1a1a);
-  padding-top: 5rem;
+  background: #1a1a1a;
 }
 .home-footer {
   text-align: center;
@@ -37,7 +36,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(to right, rgba(0, 0, 0, 0.9) 30%, rgba(0, 0, 0, 0.3) 70%);
+  background: linear-gradient(to right, #1a1a1a, transparent 25%);
   z-index: 0;
 }
 
@@ -48,7 +47,7 @@
   left: 0;
   right: 0;
   height: 150px;
-  background: linear-gradient(to top, #0a0a0a, transparent);
+  background: linear-gradient(to top, #1a1a1a, transparent 25%);
   z-index: 1;
 }
 
@@ -117,11 +116,12 @@
 .home-content {
   max-width: 1600px;
   margin: 0 auto;
-  padding: 0 1rem 4rem;
+  padding: 0 0rem 0rem;
 }
 
 .home-section {
   margin-bottom: 3rem;
+  white-space: nowrap;
 }
 
 .home-section-title {
@@ -129,8 +129,9 @@
   font-weight: bold;
   color: white;
   margin-bottom: 1rem;
-  padding: 0 3rem;
+  padding: 0 2rem;
 }
+
 
 .home-grid {
   display: grid;
@@ -139,7 +140,11 @@
   width: 100%;
   padding: 0 3rem;
 }
-
+@media (max-width: 768px){
+  .home-container {
+    padding-top: 6rem;
+  }
+}
 /* Responsive adjustments */
 @media (min-width: 640px) {
   .home-grid {

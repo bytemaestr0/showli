@@ -10,12 +10,13 @@ import Profile from './pages/Profile'
 import { useAuth } from './hooks/useAuth'
 import { useBookmarks } from './hooks/useBookmarks'
 import { useWatchHistory } from './hooks/useWatchHistory'
-import { tmdbApi } from './services/tmdbApi'
 import { useRating } from './hooks/useRating'
+import { tmdbApi } from './services/tmdbApi'
+
 function App() {
   const navigate = useNavigate()
   const location = useLocation()
-
+  
   const [selectedMedia, setSelectedMedia] = useState(() => {
     try {
       const saved = sessionStorage.getItem('selectedMedia')
@@ -31,7 +32,8 @@ function App() {
   const { user, loading: authLoading, signIn, signUp, signOut } = useAuth()
   const { bookmarks, loading: bookmarksLoading, addBookmark, removeBookmark, isBookmarked } = useBookmarks(user)
   const { history, loading: historyLoading, addToHistory, updateProgress, getProgress, removeFromHistory } = useWatchHistory(user)
-  const { ratings } = useRating(user)
+  const { setRating, getRating } = useRating(user)
+
   // Get current page from URL
   const getCurrentPage = () => {
     const pathname = location.pathname
@@ -68,12 +70,12 @@ function App() {
     }
   }, [selectedMedia])
 
-  // Handle protected route redirects
+  // ONLY redirect if user is loaded and not authenticated AND trying to access protected route
   useEffect(() => {
-    if (!user && (location.pathname === '/bookmarks' || location.pathname === '/history' || location.pathname === '/profile')) {
+    if (!authLoading && !user && (location.pathname === '/bookmarks' || location.pathname === '/history' || location.pathname === '/profile')) {
       navigate('/signin', { replace: true })
     }
-  }, [user, location.pathname, navigate])
+  }, [user, location.pathname, navigate, authLoading])
 
   const handleSearch = async (query) => {
     try {
@@ -253,38 +255,39 @@ function App() {
         />
 
         <Route 
-    path="/bookmarks" 
-    element={
-      user ? (
-        <Bookmarks 
-          bookmarks={bookmarks}
-          loading={bookmarksLoading}
-          onMediaSelect={handleMediaSelect}
-          onRemove={handleRemoveBookmark}
-          user={user}
+          path="/bookmarks" 
+          element={
+            user && !authLoading ? (
+              <Bookmarks 
+                bookmarks={bookmarks}
+                loading={bookmarksLoading}
+                onMediaSelect={handleMediaSelect}
+                onRemove={handleRemoveBookmark}
+                user={user}
+              />
+            ) : null
+          } 
         />
-      ) : null
-    } 
-  />
 
-  <Route 
-    path="/history" 
-    element={
-      user ? (
-        <History 
-          history={history}
-          loading={historyLoading}
-          onMediaSelect={handleMediaSelect}
-          onRemove={handleRemoveHistory}
-          user={user}
+        <Route 
+          path="/history" 
+          element={
+            user && !authLoading ? (
+              <History 
+                history={history}
+                loading={historyLoading}
+                onMediaSelect={handleMediaSelect}
+                onRemove={handleRemoveHistory}
+                user={user}
+              />
+            ) : null
+          } 
         />
-      ) : null
-    } 
-  />
+
         <Route 
           path="/profile" 
           element={
-            user ? (
+            user && !authLoading ? (
               <Profile 
                 user={user}
                 history={history}

@@ -1,5 +1,5 @@
 .navbar-container {
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.7));
+  background: linear-gradient(to top, #1a1a1a, #0a0a0a);
   backdrop-filter: blur(10px);
   position: fixed;
   top: 0;
@@ -349,7 +349,6 @@
   }
 }
 
-/* Mobile Styles */
 @media (max-width: 767px) {
   .navbar-container {
     padding: 0.75rem 0.75rem;
@@ -358,10 +357,9 @@
   .navbar-content {
     flex-wrap: wrap;
     gap: 0;
+    padding-top: 1rem;
     max-width: 100%;
-    grid-template-columns: none;
     display: flex;
-    flex-wrap: wrap;
   }
   
   .navbar-left {
@@ -379,6 +377,7 @@
   .navbar-logo-icon {
     width: 1.75rem;
     height: 1.75rem;
+    margin-left: 0.5rem;
   }
   
   .navbar-links {
@@ -390,6 +389,7 @@
     order: 2;
     flex: 0 1 auto;
     margin-left: auto;
+    margin-right: 0.5rem;
   }
   
   .navbar-avatar-desktop {
@@ -406,9 +406,9 @@
   
   .navbar-search {
     order: 3;
-    width: 100%;
-    padding: 0.5rem 0;
-    margin: 0.5rem 0 0 0;
+    width: calc(100% + 1.5rem);
+    padding: 0.5rem 0.75rem;  /* <-- This is the padding AROUND the search */
+    margin: 0.5rem -0.75rem 0 -0.75rem;
     flex-basis: 100%;
   }
   
@@ -431,7 +431,6 @@
     padding: 0.5rem;
   }
 }
-
 @media (max-width: 480px) {
   .navbar-container {
     padding: 0.5rem 0.5rem;

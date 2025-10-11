@@ -2,24 +2,28 @@ import { Star } from 'lucide-react'
 import '../styles/rating.css'
 
 function RatingStars({ rating, onRate, readOnly = false }) {
-  const stars = [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]
+  const handleStarClick = (starIndex) => {
+    if (readOnly) return
+    const newRating = starIndex + 1
+    onRate(newRating)
+  }
 
   return (
     <div className="rating-container">
       <div className="stars-wrapper">
-        {stars.map((starValue) => (
+        {[0, 1, 2, 3, 4].map((starIndex) => (
           <button
-            key={starValue}
-            className={`star-button ${starValue <= rating ? 'filled' : ''} ${starValue - 0.5 === Math.floor(rating) ? 'half' : ''}`}
-            onClick={() => !readOnly && onRate(starValue)}
+            key={starIndex}
+            className={`star-button ${starIndex < rating ? 'filled' : ''}`}
+            onClick={() => handleStarClick(starIndex)}
             disabled={readOnly}
-            title={`${starValue} star${starValue !== 1 ? 's' : ''}`}
+            title={`${starIndex + 1} star${starIndex + 1 !== 1 ? 's' : ''}`}
           >
-            <Star size={24} />
+            <Star size={20} fill={starIndex < rating ? 'currentColor' : 'none'} />
           </button>
         ))}
       </div>
-      <span className="rating-text">{rating.toFixed(1)}</span>
+      <span className="rating-text">{Math.round(rating)}/5</span>
     </div>
   )
 }
