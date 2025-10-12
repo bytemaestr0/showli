@@ -184,7 +184,7 @@ function App() {
         justifyContent: 'center', 
         alignItems: 'center', 
         height: '100vh',
-        background: '#0a0a0a',
+        background: '#1a1a1a',
         color: '#667eea'
       }}>
         Loading...
@@ -193,7 +193,7 @@ function App() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0a0a0a' }}>
+    <div style={{ minHeight: '100vh', background: '#1a1a1a' }}>
       <Navbar 
         user={user}
         onSignOut={handleSignOut}
