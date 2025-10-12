@@ -1,10 +1,10 @@
 .auth-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+  background: #1a1a1a;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 6rem 2rem 2rem;
+  padding: 0rem 2rem 2rem;
 }
 
 .auth-card {
