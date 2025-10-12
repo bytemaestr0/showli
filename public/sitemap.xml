@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  
+<urlset 
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
   <!-- Home Page -->
   <url>
     <loc>https://showli.xyz/</loc>
@@ -8,7 +9,7 @@
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
-  
+
   <!-- Sign In Page -->
   <url>
     <loc>https://showli.xyz/signin</loc>
@@ -16,7 +17,7 @@
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  
+
   <!-- Bookmarks Page -->
   <url>
     <loc>https://showli.xyz/bookmarks</loc>
@@ -24,7 +25,7 @@
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
-  
+
   <!-- History Page -->
   <url>
     <loc>https://showli.xyz/history</loc>
@@ -32,7 +33,7 @@
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
-  
+
   <!-- Profile Page -->
   <url>
     <loc>https://showli.xyz/profile</loc>
@@ -40,7 +41,7 @@
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
-  
+
   <!-- Popular Search Queries -->
   <url>
     <loc>https://showli.xyz/?search=trending</loc>
@@ -48,28 +49,28 @@
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
-  
+
   <url>
     <loc>https://showli.xyz/?search=movies</loc>
     <lastmod>2025-01-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
-  
+
   <url>
     <loc>https://showli.xyz/?search=the%20conjuring</loc>
     <lastmod>2025-01-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
-  
+
   <url>
     <loc>https://showli.xyz/?search=free%20streaming</loc>
     <lastmod>2025-01-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
-  
+
   <url>
     <loc>https://showli.xyz/?search=latest%20releases</loc>
     <lastmod>2025-01-10</lastmod>
@@ -78,3 +79,4 @@
   </url>
 
 </urlset>
+
